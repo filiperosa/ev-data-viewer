@@ -23,7 +23,7 @@ class DataPoint(Base):
     __tablename__ = "datapoints"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    vehicle = Column(String, ForeignKey("vehicles.id"))
+    vehicle_id = Column(String, ForeignKey("vehicles.id"))
 
     timestamp = Column(DateTime, nullable=False)
     speed = Column(Integer)
@@ -33,5 +33,6 @@ class DataPoint(Base):
     shift_state_id = Column(String, ForeignKey("shift_states.id"))
 
     #relationships
-    shift_state = relationship("ShiftStates", back_populates="datapoints", lazy="joined")
+    shift_state = relationship("ShiftStates", lazy="joined")
+    vehicle = relationship("Vehicle", back_populates="datapoints")
 
