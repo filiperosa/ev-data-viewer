@@ -16,4 +16,4 @@ app = FastAPI(
 
 
 # Add routers as different sections of the swagger page
-app.include_router(routers.default_router, tags=["Default"])
+app.include_router(routers.vehicles_router, tags=["Vehicles"])
