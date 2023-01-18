@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 import uvicorn
 
-from server import __version__
+from server import __version__, models
+from server.database import engine
 import server.routers as routers
+
+# Initialize database
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Volteras Code Challenge API",
