@@ -1,44 +1,46 @@
-from server import models
-from server.models import ShiftStates, Vehicle, DataPoint
-from server.database import engine
+### Populate from the csv files
 
-from sqlalchemy import DateTime
-from sqlalchemy.orm import sessionmaker
-
+import os
 from datetime import datetime
 
-# Initialize database
-models.Base.metadata.create_all(bind=engine)
+from db_utils.connect_db import session
+from server.models import DataPoint, Vehicle, ShiftState
+import server.models as models
 
-session = sessionmaker()(bind=engine)
+def parse_cell(cell: str):
+    """Check if a string is NULL and return None if it is"""
 
-# Create a vehicle
-vehicle = Vehicle(id="123", name="Starship")
-session.add(vehicle)
-session.commit()
+    if cell == "NULL":
+        return None
+    return cell
+    
 
-# Create a shift state
-park = ShiftStates(id="P", name="Park")
-drive = ShiftStates(id="D", name="Drive")
-neutral = ShiftStates(id="N", name="Neutral")
-reverse = ShiftStates(id="R", name="Reverse")
+# create a vehicle for each csv filename
+for file in os.listdir("db_utils/data/"):
+    if file.endswith(".csv"):
+        # create a new vehicle
+        
+        vehicle = Vehicle(id=file.split(".csv")[0], name="")
+        
+        # open the csv and add vehicle datapoints
 
-session.add_all([park, drive, neutral, reverse])
-session.commit()
+        with open(f"db_utils/data/{file}", "r") as f:
+            # consume the 1st line containing the header
+            first_line = f.readline()
 
-# Create a datapoint
-datapoint = DataPoint(
-    vehicle_id="123",
-    timestamp=datetime.now(),
-    speed=0,
-    odometer=0,
-    state_of_charge=0,
-    elevation=0,
-    shift_state_id="P"
-)
+            # for each line create a vehicle datapoint
+            for line in f:
+                line = line.strip().split(",")
+                datapoint = DataPoint(
+                    timestamp=datetime.strptime(line[0], "%Y-%m-%d %H:%M:%S.%f") if parse_cell(line[0]) else None,
+                    speed=int(line[1]) if parse_cell(line[1]) else None,
+                    odometer=float(line[2]) if parse_cell(line[2]) else None,
+                    state_of_charge=int(line[3]) if parse_cell(line[3]) else None,
+                    elevation=int(line[4]) if parse_cell(line[4]) else None,
+                    shift_state_id=line[5] if parse_cell(line[5]) else None,
+                )
+                vehicle.datapoints.append(datapoint)
 
-session.add(datapoint)
-session.commit()
-
-
-
+        # add the new vehicle to thedatabase
+        session.add(vehicle)
+        session.commit()
