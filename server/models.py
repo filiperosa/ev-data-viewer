@@ -7,12 +7,12 @@ class Vehicle(Base):
     __tablename__ = "vehicles"
     id = Column(String, primary_key=True, index=True)
     name = Column(String, default="")
-    __table_args__ = (UniqueConstraint("name"),)
+    #__table_args__ = (UniqueConstraint("name"),)
 
     # Relationships
     datapoints = relationship("DataPoint", back_populates="vehicle")
 
-class ShiftStates(Base):
+class ShiftState(Base):
     __tablename__ = "shift_states"
 
     id = Column(String(1), primary_key=True, index=True)
@@ -33,6 +33,6 @@ class DataPoint(Base):
     shift_state_id = Column(String, ForeignKey("shift_states.id"))
 
     #relationships
-    shift_state = relationship("ShiftStates", lazy="joined")
+    shift_state = relationship("ShiftState", lazy="joined")
     vehicle = relationship("Vehicle", back_populates="datapoints")
 
