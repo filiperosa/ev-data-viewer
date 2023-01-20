@@ -11,7 +11,8 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="Volteras Code Challenge API",
     version=__version__,
-    description="Data store API for Volteras Code Challenge"
+    description="Data store API for Volteras Code Challenge",
+    root_path="/api/v1"
 )
 
 
