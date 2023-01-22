@@ -4,11 +4,25 @@
         <h2>Table of Vehicle Data</h2>
     </div>
     <div class="filters">
-
+        <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text text-secondary bg-white">Vehicle ID</span>
+            <select name="vehicleIdInput" id="vehicleIdInput">
+                <option v-for="id in vehicle_ids" :value="id" v-bind:key="id">{{ id }}</option>
+            </select>
+        </div>
+        <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text text-secondary bg-white">From</span>
+            <input type="text" class="form-control" name="fromInput">
+        </div>
+        <div class="input-group input-group-sm mb-2">
+            <span class="input-group-text text-secondary bg-white">To</span>
+            <input type="text" class="form-control" name="toInput">
+        </div>
+        <button class="btn btn-primary">Filter</button>
     </div>
     <div class="table-wrapper">
-        <table id="vehicle-data-table">
-            <thead>
+        <table id="vehicle-data-table" class="table table-hover">
+            <thead class="thead-dark">
                 <tr>
                     <th>timestamp</th>
                     <th>speed</th>
@@ -39,7 +53,7 @@ export default {
         return {
             selected_vehicle: "123",
             vehicle_ids: [],
-            from: null,
+            from: "12343712",
             to: null,
             datapoints: [{"id":451,"speed":200,"state_of_charge":50,"shift_state_id":"D","vehicle_id":"123","timestamp":"2023-01-19T14:25:12.336794","odometer":49923.2,"elevation":130,"shift_state":{"id":"D","name":"Drive"}}]
         };
@@ -63,5 +77,28 @@ export default {
 </script>
 
 <style scoped>
+
+.filters {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    padding-top: 20px;
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+}
+
+.filters > div {
+    margin-right: 15px;
+}
+
+.table-wrapper {
+    padding-top: 20px;
+}
 
 </style>
