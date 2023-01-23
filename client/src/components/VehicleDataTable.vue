@@ -4,19 +4,19 @@
         <h2>Table of Vehicle Data</h2>
     </div>
     <div class="filters">
-        <div class="input-group input-group-sm mb-2">
+        <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">Vehicle ID</span>
             <select name="vehicleIdInput" id="vehicleIdInput">
                 <option v-for="id in vehicle_ids" :value="id" v-bind:key="id">{{ id }}</option>
             </select>
         </div>
-        <div class="input-group input-group-sm mb-2">
+        <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">From</span>
-            <input type="text" class="form-control" name="fromInput">
+            <Datepicker v-model="from"></Datepicker>
         </div>
-        <div class="input-group input-group-sm mb-2">
+        <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">To</span>
-            <input type="text" class="form-control" name="toInput">
+            <Datepicker v-model="to" ></Datepicker>
         </div>
         <button class="btn btn-primary">Filter</button>
     </div>
@@ -48,12 +48,13 @@
 </template>
 
 <script>
+
 export default {
     data() {
         return {
             selected_vehicle: "123",
             vehicle_ids: [],
-            from: "12343712",
+            from: null,
             to: null,
             datapoints: [{"id":451,"speed":200,"state_of_charge":50,"shift_state_id":"D","vehicle_id":"123","timestamp":"2023-01-19T14:25:12.336794","odometer":49923.2,"elevation":130,"shift_state":{"id":"D","name":"Drive"}}]
         };
@@ -93,7 +94,7 @@ export default {
     border-top: 1px solid black;
 }
 
-.filters > div {
+.filters > .filter {
     margin-right: 15px;
 }
 

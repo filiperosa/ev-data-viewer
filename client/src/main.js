@@ -8,4 +8,12 @@ import './scss/styles.scss'
 // Import all of Bootstrap's JS
 import * as bootstrap from 'bootstrap'
 
-createApp(App).mount('#app')
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
+const app = createApp(App);
+
+// https://vue3datepicker.com/
+app.component('Datepicker', Datepicker);
+
+app.mount('#app');
