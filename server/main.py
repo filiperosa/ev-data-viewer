@@ -5,6 +5,8 @@ from server import __version__, models
 from server.database import engine
 import server.routers as routers
 
+from fastapi_pagination import add_pagination
+
 # Initialize database
 models.Base.metadata.create_all(bind=engine)
 
@@ -15,6 +17,8 @@ app = FastAPI(
     root_path="/api/v1"
 )
 
+# Add pagination to the app
+add_pagination(app)
 
 # Add routers as different sections of the swagger page
 app.include_router(routers.vehicles_router, tags=["Vehicles"])

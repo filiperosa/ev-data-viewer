@@ -2,10 +2,12 @@ from fastapi import HTTPException, APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc
 from server.database import get_db
-from server import crud
+from server import crud, schemas
 from datetime import datetime
 
-from typing import Union 
+from fastapi_pagination import Page, paginate
+
+from typing import Union, List
 from enum import Enum
 
 router = APIRouter()
@@ -15,28 +17,28 @@ class OrderByEnum(str, Enum):
     desc = 'desc'
 
 
-@router.get("/vehicle_data")
-def get_vehicle_data(db: Session = Depends(get_db), from_date: datetime = None , to_date: datetime = None, order: OrderByEnum = OrderByEnum.asc, page: int = 1, limit: int = 50):
+@router.get("/vehicle_data", response_model=Page[schemas.Datapoint])
+def get_vehicle_data(db: Session = Depends(get_db), from_date: datetime = None , to_date: datetime = None, order: OrderByEnum = OrderByEnum.asc):
     """
     Get all vehicles datapoints
     """
 
-    return crud.get_vehicle_data(db, from_date, to_date, eval(order), page, limit)
+    return paginate(crud.get_vehicle_data(db, from_date, to_date, eval(order)))
 
 
-@router.get("/vehicle_data/{id}")
-def get_vehicle_data_by_id(id: str, db: Session = Depends(get_db), from_date: datetime = None , to_date: datetime = None, order: OrderByEnum = OrderByEnum.asc, page: int = 1, limit: int = 50):
+@router.get("/vehicle_data/{id}", response_model=Page[schemas.Datapoint])
+def get_vehicle_data_by_id(id: str, db: Session = Depends(get_db), from_date: datetime = None , to_date: datetime = None, order: OrderByEnum = OrderByEnum.asc):
     """
     Get datapoints from a specific vehicle
     """
 
-    return crud.get_vehicle_data_by_id(db, id, from_date, to_date, eval(order), page, limit)
+    return paginate(crud.get_vehicle_data_by_id(db, id, from_date, to_date, eval(order)))
 
 
-@router.get("/vehicles")
+@router.get("/vehicles", response_model=List[schemas.Vehicle])
 def get_vehicles(db: Session = Depends(get_db)):
     """
-    Get all vehicles
+    Get all the vehicle IDs
     """
 
     return crud.get_vehicles(db)

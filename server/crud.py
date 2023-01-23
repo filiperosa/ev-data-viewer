@@ -9,7 +9,7 @@ from datetime import datetime
 import server.models as md
 
 
-def get_vehicle_data(db: Session, from_date: datetime = None, to_date: datetime = None, order: Union[asc, desc] = asc, page: int = 1, limit: int = 50):
+def get_vehicle_data(db: Session, from_date: datetime = None, to_date: datetime = None, order: Union[asc, desc] = asc):
     """
     Get all vehicles datapoints
     """
@@ -22,12 +22,12 @@ def get_vehicle_data(db: Session, from_date: datetime = None, to_date: datetime 
     if to_date:
         query = query.filter(md.DataPoint.timestamp <= to_date)
 
-    query = query.order_by(order(md.DataPoint.timestamp)).offset((page - 1) * limit).limit(limit)
+    query = query.order_by(order(md.DataPoint.timestamp))
     
     return query.all()
 
 
-def get_vehicle_data_by_id(db: Session, id: str, from_date: datetime = None, to_date: datetime = None, order: Union[asc, desc] = asc, page: int = 1, limit: int = 50):
+def get_vehicle_data_by_id(db: Session, id: str, from_date: datetime = None, to_date: datetime = None, order: Union[asc, desc] = asc):
     """
     Get datapoints from a specific vehicle
     """
@@ -40,14 +40,14 @@ def get_vehicle_data_by_id(db: Session, id: str, from_date: datetime = None, to_
     if to_date:
         query = query.filter(md.DataPoint.timestamp <= to_date)
     
-    query = query.order_by(order(md.DataPoint.timestamp)).offset((page - 1) * limit).limit(limit)
+    query = query.order_by(order(md.DataPoint.timestamp))
     
     return query.all()
 
 
-def get_vehicles(db: Session, order: Union[asc, desc] = asc, page: int = 1, limit: int = 100):
+def get_vehicles(db: Session, order: Union[asc, desc] = asc):
     """
     Get all the vehicles
     """
 
-    return db.query(md.Vehicle).order_by(order(md.Vehicle.id)).offset((page - 1) * limit).limit(limit).all()
+    return db.query(md.Vehicle).order_by(order(md.Vehicle.id)).all()
