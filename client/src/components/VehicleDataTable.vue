@@ -12,13 +12,13 @@
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">From</span>
-            <Datepicker v-model="from"></Datepicker>
+            <Datepicker v-model="from" model-type="yyyy.MM.dd HH:mm:ss.S"></Datepicker>
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">To</span>
-            <Datepicker v-model="to" ></Datepicker>
+            <Datepicker v-model="to" show-now-button model-type="yyyy.MM.dd HH:mm:ss.S"></Datepicker>
         </div>
-        <button class="btn btn-primary">Filter</button>
+        <button class="btn btn-primary" @click="filterButtonClick">Filter</button>
     </div>
     <div class="table-wrapper">
         <table id="vehicle-data-table" class="table table-hover">
@@ -39,7 +39,7 @@
                     <td>{{ datapoint.odometer }}</td>
                     <td>{{ datapoint.soc }}</td>
                     <td>{{ datapoint.elevation }}</td>
-                    <td>{{ datapoint.shift_state.id }}</td>
+                    <td>{{ datapoint.shift_state_id }}</td>
                 </tr>
             </tbody>
         </table>
@@ -48,10 +48,10 @@
 </template>
 
 <script>
-
 export default {
     data() {
         return {
+            API_URL: "/api/v1",
             selected_vehicle: "123",
             vehicle_ids: [],
             from: null,
@@ -64,15 +64,49 @@ export default {
             //TODO: call the API
             return
         },
+        //
+        // get vehicle datapoints from the API
+        async getDatapoints(id = null, from = null, to = null, page = 1, per_page = 10){
+            let url = [`${this.API_URL}/vehicle_data`];
+            if(id){
+                url.push(`/${id}`)
+            }
+            url.push('?');
+            if(from){
+                url.push(`from=${from}&`);
+            }
+            if(to){
+                url.push(`to=${to}&`);
+            }
+            url.push(`page=${page}&`);
+            url.push(`limit=${per_page}&`);
+
+            const rsp = await fetch(url.join(''));
+            this.datapoints = await rsp.json();
+            console.log(this.datapoints);
+        },
+        // filter button click handler
+        filterButtonClick() {
+            console.log(`Search datapoints from ${this.from} to ${this.to}`);
+            if (this.from > this.to) {
+                alert("From date must be before To date");
+                this.to = null;
+                this.from = null;
+                return;
+            }
+
+            // this.getDatapoints(this.selected_vehicle, this.from, this.to);
+        }
     },
     computed: {
         sortedDatapoints(){
             //TODO: sort datapoints here
             return datapoints
-        }
+        },
     },
-    created() {
+    mounted() {
         //TODO: load data from API (pre-fill vehicle id dropdown)
+        this.getDatapoints();
     }
 };
 </script>
