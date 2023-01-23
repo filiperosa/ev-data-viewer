@@ -12,7 +12,8 @@
     "@popperjs/core": "^2.11.6",
     "@vuepic/vue-datepicker": "^3.6.5",
     "bootstrap": "^5.2.3",
-    "vue": "^3.2.45"
+    "vue": "^3.2.45",
+    "vuejs-paginate-next": "^1.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

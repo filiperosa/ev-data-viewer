@@ -37,13 +37,19 @@
                     <td>{{ datapoint.timestamp }}</td>
                     <td>{{ datapoint.speed }}</td>
                     <td>{{ datapoint.odometer }}</td>
-                    <td>{{ datapoint.soc }}</td>
+                    <td>{{ datapoint.state_of_charge }}</td>
                     <td>{{ datapoint.elevation }}</td>
                     <td>{{ datapoint.shift_state_id }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <Paginate
+        :page-count="total_pages"
+        :click-handler="changePage"
+        :prev-text="'Prev'"
+        :next-text="'Next'"
+    />
 </div>
 </template>
 
@@ -52,11 +58,20 @@ export default {
     data() {
         return {
             API_URL: "/api/v1",
+
+            //Filter variables
             selected_vehicle: "123",
             vehicle_ids: [],
             from: null,
             to: null,
-            datapoints: [{"id":451,"speed":200,"state_of_charge":50,"shift_state_id":"D","vehicle_id":"123","timestamp":"2023-01-19T14:25:12.336794","odometer":49923.2,"elevation":130,"shift_state":{"id":"D","name":"Drive"}}]
+
+            // Data to display
+            datapoints: [{"id":451,"speed":200,"state_of_charge":50,"shift_state_id":"D","vehicle_id":"123","timestamp":"2023-01-19T14:25:12.336794","odometer":49923.2,"elevation":130,"shift_state":{"id":"D","name":"Drive"}}],
+            
+            //Pagination variables
+            selected_page: 1,
+            items_per_page: 50,
+            total_pages: 10
         };
     },
     methods: {
@@ -66,7 +81,7 @@ export default {
         },
         //
         // get vehicle datapoints from the API
-        async getDatapoints(id = null, from = null, to = null, page = 1, per_page = 10){
+        async getDatapoints(id = null, from = null, to = null, page = 1, per_page = this.items_per_page){
             let url = [`${this.API_URL}/vehicle_data`];
             if(id){
                 url.push(`/${id}`)
@@ -96,6 +111,11 @@ export default {
             }
 
             // this.getDatapoints(this.selected_vehicle, this.from, this.to);
+        },
+        changePage(page){
+            this.selected_page = page;
+            console.log(`selected page: ${this.selected_page}`)
+            // this.getDatapoints(this.selected_vehicle, this.from, this.to, this.selected_page, this.items_per_page);
         }
     },
     computed: {
@@ -133,6 +153,39 @@ export default {
 }
 
 .table-wrapper {
+    padding-top: 20px;
+    height: 50vh !important;
+    overflow: scroll;
+}
+
+thead {
+    background-color: #343a40;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+/* thead::before {
+    content:" ";
+    display: block;
+    position: absolute;
+    top: -8px;
+    height: 8px;
+    width: 100%;
+    background-color: solid white !important;
+} */
+
+thead:before{
+    content:'';
+    position:absolute;
+    left: 0;
+    top: -100px;
+    width:100%;
+    border-bottom: 100px solid white;
+}
+
+.pagination {
+    justify-content: center;
     padding-top: 20px;
 }
 
