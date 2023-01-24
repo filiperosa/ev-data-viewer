@@ -197,7 +197,7 @@ export default {
 
 .table-wrapper {
     padding-top: 20px;
-    height: 50vh !important;
+    max-height: 70vh !important;
     overflow: scroll;
 }
 
@@ -215,6 +215,10 @@ thead:before{
     top: -100px;
     width:100%;
     border-bottom: 100px solid white;
+}
+
+thead th:first-child {
+    cursor: pointer;
 }
 
 #vehicleIdInput {
@@ -236,6 +240,19 @@ nav > .input-group {
     margin-left: 1rem;
 }
 
+
+/* Persisten scrollbar  */
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
 </style>
 
 <style>
