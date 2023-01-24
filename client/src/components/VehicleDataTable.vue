@@ -6,18 +6,18 @@
     <div class="filters">
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">Vehicle ID</span>
-            <select name="vehicleIdInput" id="vehicleIdInput" v-model="selected_vehicle">
+            <select name="vehicleIdInput" id="vehicleIdInput" v-model="selected_vehicle" class="input-group-text text-secondary bg-white">
                 <option value='all'>All</option>
                 <option v-for="vehicle in vehicles" :value="vehicle.id" v-bind:key="vehicle.id">{{ vehicle.id }}</option>
             </select>
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">From</span>
-            <Datepicker v-model="from" model-type="yyyy.MM.dd HH:mm:ss.S"></Datepicker>
+            <Datepicker v-model="from" model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker"></Datepicker>
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">To</span>
-            <Datepicker v-model="to" show-now-button model-type="yyyy.MM.dd HH:mm:ss.S"></Datepicker>
+            <Datepicker v-model="to" show-now-button model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker" ></Datepicker>
         </div>
         <button class="btn btn-primary" @click="filterButtonClick">Filter</button>
     </div>
@@ -92,10 +92,10 @@ export default {
             }
             url.push('?');
             if(this.from){
-                url.push(`from=${this.from}&`);
+                url.push(`from_date=${this.from}&`);
             }
             if(this.to){
-                url.push(`to=${this.to}&`);
+                url.push(`to_date=${this.to}&`);
             }
             url.push(`page=${this.selected_page}&`);
             url.push(`size=${this.items_per_page}&`);
@@ -204,4 +204,21 @@ thead:before{
     padding-top: 20px;
 }
 
+#vehicleIdInput {
+    text-align: left;
+}
+
+.input-group {
+    width: fit-content !important;
+}
+
+</style>
+
+<style>
+.custom-datepicker {
+    height: 31px !important;
+    width: 200px !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
 </style>

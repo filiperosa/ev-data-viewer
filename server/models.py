@@ -3,11 +3,11 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from server.database import Base
 
+# Database tables and relationships
 class Vehicle(Base):
     __tablename__ = "vehicles"
     id = Column(String, primary_key=True, index=True)
     name = Column(String, default="")
-    #__table_args__ = (UniqueConstraint("name"),)
 
     # Relationships
     datapoints = relationship("DataPoint", back_populates="vehicle")
