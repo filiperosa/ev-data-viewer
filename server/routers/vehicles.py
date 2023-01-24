@@ -1,4 +1,4 @@
-from fastapi import HTTPException, APIRouter, Depends
+from fastapi import HTTPException, APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 from sqlalchemy import asc, desc
 from server.database import get_db
@@ -42,3 +42,8 @@ def get_vehicles(db: Session = Depends(get_db)):
     """
 
     return crud.get_vehicles(db)
+
+
+@router.post("/vehicle_data")
+def upload_vehicle_data(file: UploadFile, db: Session = Depends(get_db)):
+    return crud.import_vehicle_data_from_csv_file(db, file)
