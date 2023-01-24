@@ -45,12 +45,24 @@
             </tbody>
         </table>
     </div>
-    <Paginate
-        :page-count="total_pages"
-        :click-handler="changePage"
-        :prev-text="'Prev'"
-        :next-text="'Next'"
-    />
+    <nav>
+        <Paginate
+            :page-count="total_pages"
+            :click-handler="changePage"
+            :prev-text="'Prev'"
+            :next-text="'Next'"
+        />
+        <div class="input-group input-group-sm">
+            <span class="input-group-text text-secondary bg-white">Per page:</span>
+            <select class="form-select" aria-label="Select items per page" v-model="items_per_page" @change="getDatapoints" >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>                               
+        </div>
+    </nav>
 </div>
 </template>
 
@@ -199,10 +211,10 @@ thead:before{
     border-bottom: 100px solid white;
 }
 
-.pagination {
+/* .pagination {
     justify-content: center;
     padding-top: 20px;
-}
+} */
 
 #vehicleIdInput {
     text-align: left;
@@ -210,6 +222,17 @@ thead:before{
 
 .input-group {
     width: fit-content !important;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+nav > .input-group {
+    height: 38px;
+    margin-left: 1rem;
 }
 
 </style>
