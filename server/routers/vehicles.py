@@ -46,6 +46,8 @@ def get_vehicles(db: Session = Depends(get_db)):
 
 @router.post("/vehicle_data")
 def upload_vehicle_data(file: UploadFile, db: Session = Depends(get_db)):
+    """ Upload a CSV file with vehicle data """
+
     # check if file is a csv
     if file.content_type != "text/csv":
         raise HTTPException(status_code=400, detail="File is not a CSV")
