@@ -25,12 +25,12 @@
         <table id="vehicle-data-table" class="table table-hover">
             <thead class="thead-dark">
                 <tr>
-                    <th>timestamp</th>
-                    <th>speed</th>
-                    <th>odometer</th>
-                    <th>soc</th>
-                    <th>elevation</th>
-                    <th>shift_state</th>
+                    <th @click="sort">Timestamp</th>
+                    <th>Speed</th>
+                    <th>Odometer</th>
+                    <th>Soc</th>
+                    <th>Elevation</th>
+                    <th>Shift state</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,6 +77,7 @@ export default {
             vehicles: [],
             from: null,
             to: null,
+            order_asc: true,
 
             // Data to display
             datapoints: [{"id":451,"speed":200,"state_of_charge":50,"shift_state_id":"D","vehicle_id":"123","timestamp":"2023-01-19T14:25:12.336794","odometer":49923.2,"elevation":130,"shift_state":{"id":"D","name":"Drive"}}],
@@ -93,12 +94,12 @@ export default {
             return
         },
         //
-        // get vehicle datapoints from the API
+        // Get vehicle datapoints from the API
         async getDatapoints(){
             let url = [`${this.API_URL}/vehicle_data`];
 
-            console.log(this.selected_vehicle, this.from, this.to, this.selected_page, this.items_per_page);
-
+            // build the url with all the filtering options
+            //
             if(this.selected_vehicle != 'all'){
                 url.push(`/${this.selected_vehicle}`)
             }
@@ -111,21 +112,27 @@ export default {
             }
             url.push(`page=${this.selected_page}&`);
             url.push(`size=${this.items_per_page}&`);
+            url.push(`order=${this.order_asc ? 'asc' : 'desc'}`);
 
+            // fetch the data
             const rsp_full = await fetch(url.join(''));
             const response = await rsp_full.json();
 
+            // unpack the data
             this.datapoints = response.items;
             this.total_pages = Math.floor(response.total/response.size);
             this.page = response.page;
 
             console.log(this.datapoints);
         },
+        //
+        // Get all the vehicle ids from the API
         async getVehicleIds(){
             const rsp_full = await fetch(`${this.API_URL}/vehicles`);
             this.vehicles = await rsp_full.json();
         },
-        // filter button click handler
+        //
+        // Filter button click handler
         filterButtonClick() {
             this.selected_page = 1;
             console.log(`Search datapoints from ${this.from} to ${this.to}`);
@@ -138,9 +145,18 @@ export default {
 
             this.getDatapoints();
         },
+        //
+        // Handle page change
         changePage(page){
             this.selected_page = page;
             console.log(`selected page: ${this.selected_page}`)
+            this.getDatapoints();
+        },
+        //
+        // Invert sorting order by timestamp
+        sort(){
+            this.order_asc = !this.order_asc;
+            console.log(this.order_asc)
             this.getDatapoints();
         }
     },
@@ -192,16 +208,6 @@ thead {
     top: 0;
 }
 
-/* thead::before {
-    content:" ";
-    display: block;
-    position: absolute;
-    top: -8px;
-    height: 8px;
-    width: 100%;
-    background-color: solid white !important;
-} */
-
 thead:before{
     content:'';
     position:absolute;
@@ -210,11 +216,6 @@ thead:before{
     width:100%;
     border-bottom: 100px solid white;
 }
-
-/* .pagination {
-    justify-content: center;
-    padding-top: 20px;
-} */
 
 #vehicleIdInput {
     text-align: left;
