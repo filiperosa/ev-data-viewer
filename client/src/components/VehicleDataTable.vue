@@ -6,8 +6,9 @@
     <div class="filters">
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">Vehicle ID</span>
-            <select name="vehicleIdInput" id="vehicleIdInput">
-                <option v-for="id in vehicle_ids" :value="id" v-bind:key="id">{{ id }}</option>
+            <select name="vehicleIdInput" id="vehicleIdInput" v-model="selected_vehicle">
+                <option value='all'>All</option>
+                <option v-for="vehicle in vehicles" :value="vehicle.id" v-bind:key="vehicle.id">{{ vehicle.id }}</option>
             </select>
         </div>
         <div class="input-group input-group-sm filter">
@@ -39,7 +40,7 @@
                     <td>{{ datapoint.odometer }}</td>
                     <td>{{ datapoint.state_of_charge }}</td>
                     <td>{{ datapoint.elevation }}</td>
-                    <td>{{ datapoint.shift_state_id }}</td>
+                    <td>{{ datapoint.shift_state ? datapoint.shift_state.id : ''}}</td>
                 </tr>
             </tbody>
         </table>
@@ -60,8 +61,8 @@ export default {
             API_URL: "/api/v1",
 
             //Filter variables
-            selected_vehicle: "123",
-            vehicle_ids: [],
+            selected_vehicle: "all",
+            vehicles: [],
             from: null,
             to: null,
 
@@ -81,27 +82,40 @@ export default {
         },
         //
         // get vehicle datapoints from the API
-        async getDatapoints(id = null, from = null, to = null, page = 1, per_page = this.items_per_page){
+        async getDatapoints(){
             let url = [`${this.API_URL}/vehicle_data`];
-            if(id){
-                url.push(`/${id}`)
+
+            console.log(this.selected_vehicle, this.from, this.to, this.selected_page, this.items_per_page);
+
+            if(this.selected_vehicle != 'all'){
+                url.push(`/${this.selected_vehicle}`)
             }
             url.push('?');
-            if(from){
-                url.push(`from=${from}&`);
+            if(this.from){
+                url.push(`from=${this.from}&`);
             }
-            if(to){
-                url.push(`to=${to}&`);
+            if(this.to){
+                url.push(`to=${this.to}&`);
             }
-            url.push(`page=${page}&`);
-            url.push(`limit=${per_page}&`);
+            url.push(`page=${this.selected_page}&`);
+            url.push(`size=${this.items_per_page}&`);
 
-            const rsp = await fetch(url.join(''));
-            this.datapoints = await rsp.json();
+            const rsp_full = await fetch(url.join(''));
+            const response = await rsp_full.json();
+
+            this.datapoints = response.items;
+            this.total_pages = Math.floor(response.total/response.size);
+            this.page = response.page;
+
             console.log(this.datapoints);
+        },
+        async getVehicleIds(){
+            const rsp_full = await fetch(`${this.API_URL}/vehicles`);
+            this.vehicles = await rsp_full.json();
         },
         // filter button click handler
         filterButtonClick() {
+            this.selected_page = 1;
             console.log(`Search datapoints from ${this.from} to ${this.to}`);
             if (this.from > this.to) {
                 alert("From date must be before To date");
@@ -110,12 +124,12 @@ export default {
                 return;
             }
 
-            // this.getDatapoints(this.selected_vehicle, this.from, this.to);
+            this.getDatapoints();
         },
         changePage(page){
             this.selected_page = page;
             console.log(`selected page: ${this.selected_page}`)
-            // this.getDatapoints(this.selected_vehicle, this.from, this.to, this.selected_page, this.items_per_page);
+            this.getDatapoints();
         }
     },
     computed: {
@@ -127,6 +141,7 @@ export default {
     mounted() {
         //TODO: load data from API (pre-fill vehicle id dropdown)
         this.getDatapoints();
+        this.getVehicleIds();
     }
 };
 </script>
