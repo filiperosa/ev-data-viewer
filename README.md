@@ -7,6 +7,7 @@ FastAPI serving EV vehicle data to a simple Vue.js 3 frontend displaying vehicle
 ## Run preview of the application
 	
     $ source server/venv/bin/activate;
+    $ export PYTHONPATH=$(pwd)
 	$ python server/main.py
 	
     In a separate shell run:
@@ -33,10 +34,10 @@ The datapoins in the page are ploted in the bottom charts. The charts are intera
 
 This demo app is built with super cool open source projects:
 
-vue-chartjs for the charts - https://vue-chartjs.org/
-vue3-datepicker for the datepicker popovers - https://vue3datepicker.com/
-vuejs-paginate-next for the pagination component - https://www.npmjs.com/package/vuejs-paginate-next
-fastapi_pagination for the backend pagination - https://uriyyo-fastapi-pagination.netlify.app
+- [vue-chartjs](https://vue-chartjs.org/) for the charts
+- [vue3-datepicker](https://vue3datepicker.com/) for the datepicker popovers
+- [vuejs-paginate-next](https://www.npmjs.com/package/vuejs-paginate-next) for the pagination component
+- [fastapi_pagination](https://uriyyo-fastapi-pagination.netlify.app) for the backend pagination
 
 
 
