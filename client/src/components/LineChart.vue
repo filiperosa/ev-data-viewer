@@ -7,6 +7,7 @@ import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
@@ -18,12 +19,14 @@ import { Line } from 'vue-chartjs'
 ChartJS.register(
     CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
     Tooltip,
     Legend
 )
+import 'chartjs-adapter-date-fns';
 
 export default {
     name: 'LineChart',
@@ -31,42 +34,50 @@ export default {
         Line
     },
     props: {
-        labels: {
+        // labels: {
+        //     type: Array,
+        //     required: true
+        // },
+        // data: {
+        //     type: Array,
+        //     required: true
+        // },
+        // caption: {
+        //     type: String,
+        //     required: false
+        // },
+        // color: {
+        //     type: String,
+        //     required: false
+        // }
+        datasets: {
             type: Array,
             required: true
-        },
-        data: {
-            type: Array,
-            required: true
-        },
-        caption: {
-            type: String,
-            required: false
-        },
-        color: {
-            type: String,
-            required: false
         }
     },
     data() {
         return {
             chartOptions: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                scales: {
+                    xAxis: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute', 
+                            displayFormats: {
+                                millisecond: ''
+                            }
+                        }
+                    } 
+                }
             }
         }
     },
     computed: {
         chartData() {
             return{
-                labels: this.labels,
-                datasets: [
-                    {
-                    label: this.caption ? this.caption : '',
-                    backgroundColor: this.color ? this.color : '#f87979',
-                    data: this.data
-                    }
-                ]
+                datasets: this.datasets
             }
         }
     }

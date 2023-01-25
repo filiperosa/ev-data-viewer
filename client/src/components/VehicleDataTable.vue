@@ -65,9 +65,12 @@
     </nav>
     <div class="graph-section">
         <div class="graph-box">
-            <line-chart :caption="'Speed'" :labels="speedStats.labels" :data="speedStats.data" />
+            <line-chart :datasets="[speedData, socData, elevationData]" />
         </div>
-        <div class="graph-box">
+        <div class="graph-box-small">
+            <line-chart :datasets="[odometerData]" />
+        </div>
+        <div class="graph-box-small">
             <pie-chart :labels="gearStats.labels" :data="gearStats.data" />
         </div>
     </div>
@@ -172,10 +175,6 @@ export default {
         }
     },
     computed: {
-        sortedDatapoints(){
-            //TODO: sort datapoints here
-            return datapoints
-        },
         gearStats() {
             let gears = {}
             for (let d of this.datapoints) {
@@ -193,64 +192,61 @@ export default {
                 data: Object.values(gears)
             }
         },
-        speedStats() {
-            let labels = []
+        speedData() {
             let data = []
             for (let d of this.datapoints) {
                 if (d.speed) {
-                    labels.push(d.timestamp);
-                    data.push(d.speed);
+                    data.push({x: d.timestamp, y: d.speed});
                 }
             }
-
             return {
-                labels: labels,
-                data: data
+                label: 'Speed',
+                data: data,
+                backgroundColor : '#f87979',
+                borderColor : '#f8797980',
+                tension: 0.1
             }
         },
-        socStats() {
-            let labels = []
+        socData() {
             let data = []
             for (let d of this.datapoints) {
                 if (d.state_of_charge) {
-                    labels.push(d.timestamp);
-                    data.push(d.state_of_charge);
+                    data.push({x: d.timestamp, y: d.state_of_charge});
                 }
             }
-
             return {
-                labels: labels,
-                data: data
+                label: 'Soc',
+                data: data,
+                backgroundColor: '#41B883',
+                borderColor: '#41B88380',
             }
         },
-        odometerStats() {
-            let labels = []
+        odometerData() {
             let data = []
             for (let d of this.datapoints) {
                 if (d.odometer) {
-                    labels.push(d.timestamp);
-                    data.push(d.odometer);
+                    data.push({x: d.timestamp, y: d.odometer});
                 }
             }
-
             return {
-                labels: labels,
-                data: data
+                label: 'Odometer',
+                data: data,
+                backgroundColor: '#ffbb00',
+                borderColor: '#ffbb0080',
             }
         },
-        elevationStats() {
-            let labels = []
+        elevationData() {
             let data = []
             for (let d of this.datapoints) {
                 if (d.elevation) {
-                    labels.push(d.timestamp);
-                    data.push(d.elevation);
+                    data.push({x: d.timestamp, y: d.elevation});
                 }
             }
-
             return {
-                labels: labels,
-                data: data
+                label: 'Elevation',
+                data: data,
+                backgroundColor: '#007bff',
+                borderColor: '#007bff80',
             }
         }
     },
@@ -266,7 +262,7 @@ export default {
 
 .filters {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-content: center;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -285,7 +281,7 @@ export default {
 
 .table-wrapper {
     padding-top: 20px;
-    max-height: 55vh !important;
+    max-height: 50vh !important;
     overflow: scroll;
 }
 
@@ -329,7 +325,7 @@ nav > .input-group {
 }
 
 .graph-section {
-    height: 30%;
+    height: 30vh;
     display: flex;
     justify-content: space-between;
     align-content: center;
@@ -339,6 +335,11 @@ nav > .input-group {
 }
 
 .graph-box {
+    width: 50%;
+    height: 100%;
+}
+
+.graph-box-small {
     width: 25%;
     height: 100%;
 }

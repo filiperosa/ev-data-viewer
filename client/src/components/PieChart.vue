@@ -38,7 +38,7 @@ export default {
         labels: this.labels,
         datasets: [
           {
-            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#ffbb00'],
             data: this.data
           }
         ]
