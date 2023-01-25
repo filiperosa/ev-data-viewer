@@ -22,9 +22,13 @@ FastAPI serving EV vehicle data to a simple Vue.js 3 frontend displaying vehicle
 
 ![My Image](Screenshot.png)
     
-A chrome tab is opened once the app is launched.
+A chrome tab is opened once the app is launched. The database starts empty and can be populated with the following command:
 
-The API is accessible under .../app/v1/docs. In the swagger page it is possible to upload CSV files with vehicle data, following the same structure as the example files under /db_utils/data/.
+    $ python db_utils/populate_db.py
+
+OR
+
+Through the API accessible under .../app/v1/docs. In the swagger page it is possible to upload CSV files with vehicle data. You can upload one of the files under db_utils/data/ or build one yourself following the same structure.
 
 The frontend presents a table with vehicle datapoints and allows filtering by vehicle id and a date range.
 The datapoins in the page are ploted in the bottom charts. The charts are interactive and allow disabling lines.
