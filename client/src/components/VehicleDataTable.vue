@@ -63,11 +63,22 @@
             </select>                               
         </div>
     </nav>
+    <div class="graph-section">
+        <div class="graph-box">
+            <line-chart />
+        </div>
+        <div class="graph-box">
+            <pie-chart :labels="gearsUsed.labels" :data="gearsUsed.data" />
+        </div>
+    </div>
 </div>
 </template>
 
 <script>
+import LineChart from './LineChart.vue';
+import PieChart from './PieChart.vue';
 export default {
+    components: { LineChart, PieChart },
     data() {
         return {
             API_URL: "/api/v1",
@@ -165,6 +176,23 @@ export default {
             //TODO: sort datapoints here
             return datapoints
         },
+        gearsUsed() {
+            let gears = {}
+            for (let d of this.datapoints) {
+                const shift_name = d.shift_state ? d.shift_state.name : 'None';
+
+                if (gears[shift_name]) {
+                    gears[shift_name] += 1;
+                } else {
+                    gears[shift_name] = 1;
+                }         
+            }
+
+            return {
+                labels: Object.keys(gears),
+                data: Object.values(gears)
+            }
+        }
     },
     mounted() {
         //TODO: load data from API (pre-fill vehicle id dropdown)
@@ -197,7 +225,7 @@ export default {
 
 .table-wrapper {
     padding-top: 20px;
-    max-height: 70vh !important;
+    max-height: 55vh !important;
     overflow: scroll;
 }
 
@@ -240,6 +268,20 @@ nav > .input-group {
     margin-left: 1rem;
 }
 
+.graph-section {
+    height: 30%;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.graph-box {
+    width: 25%;
+    height: 100%;
+}
 
 /* Persisten scrollbar  */
 
