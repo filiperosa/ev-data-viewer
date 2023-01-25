@@ -65,10 +65,10 @@
     </nav>
     <div class="graph-section">
         <div class="graph-box">
-            <line-chart />
+            <line-chart :caption="'Speed'" :labels="speedStats.labels" :data="speedStats.data" />
         </div>
         <div class="graph-box">
-            <pie-chart :labels="gearsUsed.labels" :data="gearsUsed.data" />
+            <pie-chart :labels="gearStats.labels" :data="gearStats.data" />
         </div>
     </div>
 </div>
@@ -176,7 +176,7 @@ export default {
             //TODO: sort datapoints here
             return datapoints
         },
-        gearsUsed() {
+        gearStats() {
             let gears = {}
             for (let d of this.datapoints) {
                 const shift_name = d.shift_state ? d.shift_state.name : 'None';
@@ -191,6 +191,66 @@ export default {
             return {
                 labels: Object.keys(gears),
                 data: Object.values(gears)
+            }
+        },
+        speedStats() {
+            let labels = []
+            let data = []
+            for (let d of this.datapoints) {
+                if (d.speed) {
+                    labels.push(d.timestamp);
+                    data.push(d.speed);
+                }
+            }
+
+            return {
+                labels: labels,
+                data: data
+            }
+        },
+        socStats() {
+            let labels = []
+            let data = []
+            for (let d of this.datapoints) {
+                if (d.state_of_charge) {
+                    labels.push(d.timestamp);
+                    data.push(d.state_of_charge);
+                }
+            }
+
+            return {
+                labels: labels,
+                data: data
+            }
+        },
+        odometerStats() {
+            let labels = []
+            let data = []
+            for (let d of this.datapoints) {
+                if (d.odometer) {
+                    labels.push(d.timestamp);
+                    data.push(d.odometer);
+                }
+            }
+
+            return {
+                labels: labels,
+                data: data
+            }
+        },
+        elevationStats() {
+            let labels = []
+            let data = []
+            for (let d of this.datapoints) {
+                if (d.elevation) {
+                    labels.push(d.timestamp);
+                    data.push(d.elevation);
+                }
+            }
+
+            return {
+                labels: labels,
+                data: data
             }
         }
     },

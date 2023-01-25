@@ -30,31 +30,43 @@ export default {
     components: {
         Line
     },
-    //   props: {
-    //     chartData: {
-    //         type: Object,
-    //         required: true
-    //       },
-    //     chartOptions: {
-    //       type: Object,
-    //       default: () => {}
-    //     }
-    //   },
+    props: {
+        labels: {
+            type: Array,
+            required: true
+        },
+        data: {
+            type: Array,
+            required: true
+        },
+        caption: {
+            type: String,
+            required: false
+        },
+        color: {
+            type: String,
+            required: false
+        }
+    },
     data() {
         return {
-            chartData: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                    {
-                    label: 'Data One',
-                    backgroundColor: '#f87979',
-                    data: [40, 39, 10, 40, 39, 80, 40]
-                    }
-                ]
-            },
             chartOptions: {
                 responsive: true,
                 maintainAspectRatio: false
+            }
+        }
+    },
+    computed: {
+        chartData() {
+            return{
+                labels: this.labels,
+                datasets: [
+                    {
+                    label: this.caption ? this.caption : '',
+                    backgroundColor: this.color ? this.color : '#f87979',
+                    data: this.data
+                    }
+                ]
             }
         }
     }
