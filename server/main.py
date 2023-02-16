@@ -11,9 +11,9 @@ from fastapi_pagination import add_pagination
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Volteras Code Challenge API",
+    title="EV Data Store",
     version=__version__,
-    description="Data store API for Volteras Code Challenge",
+    description="Data store API for electric vehicle data",
     root_path="/api/v1"
 )
 
