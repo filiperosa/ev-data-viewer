@@ -3,7 +3,7 @@ import uvicorn
 
 from server import __version__, models
 from server.database import engine
-import server.routers as routers
+import server.router as router
 
 from fastapi_pagination import add_pagination
 
@@ -21,7 +21,7 @@ app = FastAPI(
 add_pagination(app)
 
 # Add routers as different sections of the swagger page
-app.include_router(routers.vehicles_router, tags=["Vehicles"])
+app.include_router(router.router, tags=["Vehicles"])
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000)
