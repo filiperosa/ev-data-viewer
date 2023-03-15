@@ -80,70 +80,27 @@
 <script>
 import LineChart from './LineChart.vue';
 import PieChart from './PieChart.vue';
+
+import { mapWritableState } from 'pinia'
+import { useEvDataStore } from '../stores/EvDataStore'
+
 export default {
     components: { LineChart, PieChart },
     data() {
-        return {
-            API_URL: "/api/v1",
-
-            //Filter variables
-            selected_vehicle: "all",
-            vehicles: [],
-            from: null,
-            to: null,
-            order_asc: true,
-
-            // Data to display
-            datapoints: [{"id":451,"speed":200,"state_of_charge":50,"shift_state_id":"D","vehicle_id":"123","timestamp":"2023-01-19T14:25:12.336794","odometer":49923.2,"elevation":130,"shift_state":{"id":"D","name":"Drive"}}],
-            
-            //Pagination variables
-            selected_page: 1,
-            items_per_page: 50,
-            total_pages: 10
-        };
+        return {};
     },
     methods: {
-        updateDatapoints(){
-            //TODO: call the API
-            return
+        //
+        // Refresh data
+        async getDatapoints() {
+            const store = useEvDataStore();
+            await store.fetchVehicleDatapoints();
         },
         //
-        // Get vehicle datapoints from the API
-        async getDatapoints(){
-            let url = [`${this.API_URL}/vehicle_data`];
-
-            // build the url with all the filtering options
-            //
-            if(this.selected_vehicle != 'all'){
-                url.push(`/${this.selected_vehicle}`)
-            }
-            url.push('?');
-            if(this.from){
-                url.push(`from_date=${this.from}&`);
-            }
-            if(this.to){
-                url.push(`to_date=${this.to}&`);
-            }
-            url.push(`page=${this.selected_page}&`);
-            url.push(`size=${this.items_per_page}&`);
-            url.push(`order=${this.order_asc ? 'asc' : 'desc'}`);
-
-            // fetch the data
-            const rsp_full = await fetch(url.join(''));
-            const response = await rsp_full.json();
-
-            // unpack the data
-            this.datapoints = response.items;
-            this.total_pages = Math.floor(response.total/response.size);
-            this.page = response.page;
-
-            console.log(this.datapoints);
-        },
-        //
-        // Get all the vehicle ids from the API
-        async getVehicleIds(){
-            const rsp_full = await fetch(`${this.API_URL}/vehicles`);
-            this.vehicles = await rsp_full.json();
+        // Get vehicle ids
+        async getVehicleIds() {
+            const store = useEvDataStore();
+            await store.fetchVehicleIds();
         },
         //
         // Filter button click handler
@@ -175,6 +132,24 @@ export default {
         }
     },
     computed: {
+        //
+        // Map store variables to component
+        ...mapWritableState(useEvDataStore, 
+            [
+                'datapoints',
+                'vehicles',
+                'selected_vehicle',
+                'from',
+                'to',
+                'order_asc',
+                'selected_page',
+                'items_per_page',
+                'total_pages'
+            ]
+        ),
+        //
+        // The functions below are used to format data for the charts
+        //
         gearStats() {
             let gears = {}
             for (let d of this.datapoints) {
@@ -251,9 +226,9 @@ export default {
         }
     },
     mounted() {
-        //TODO: load data from API (pre-fill vehicle id dropdown)
-        this.getDatapoints();
+        // Retrieve some data on mount
         this.getVehicleIds();
+        this.getDatapoints();
     }
 };
 </script>
