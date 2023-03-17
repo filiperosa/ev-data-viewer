@@ -3,3 +3,4 @@ uvicorn[standard]
 sqlalchemy
 fastapi-pagination
 python-multipart
+python-jose[cryptography]
