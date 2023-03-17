@@ -3,4 +3,10 @@ uvicorn[standard]
 sqlalchemy
 fastapi-pagination
 python-multipart
+
+# to pack and unpack JWT tokens
 python-jose[cryptography]
+
+# to hash passwords
+passlib[bcrypt]
+
