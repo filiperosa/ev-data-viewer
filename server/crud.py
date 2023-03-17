@@ -7,6 +7,8 @@ from datetime import datetime
 
 import server.models as md
 
+from fastapi_pagination.ext.sqlalchemy import paginate
+
 
 def get_vehicle_data(db: Session, from_date: datetime = None, to_date: datetime = None, order: Union[asc, desc] = asc):
     """
@@ -23,7 +25,7 @@ def get_vehicle_data(db: Session, from_date: datetime = None, to_date: datetime 
 
     query = query.order_by(order(md.DataPoint.timestamp))
     
-    return query.all()
+    return paginate(query)
 
 
 def get_vehicle_data_by_id(db: Session, id: str, from_date: datetime = None, to_date: datetime = None, order: Union[asc, desc] = asc):
@@ -41,7 +43,7 @@ def get_vehicle_data_by_id(db: Session, id: str, from_date: datetime = None, to_
     
     query = query.order_by(order(md.DataPoint.timestamp))
     
-    return query.all()
+    return paginate(query)
 
 
 def get_vehicles(db: Session, order: Union[asc, desc] = asc):

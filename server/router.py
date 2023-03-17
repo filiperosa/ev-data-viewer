@@ -5,7 +5,7 @@ from server.database import get_db
 from server import crud, schemas
 from datetime import datetime
 
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import Page
 
 from typing import Union, List
 from enum import Enum
@@ -23,7 +23,7 @@ def get_vehicle_data(db: Session = Depends(get_db), from_date: datetime = None ,
     Get all vehicles datapoints
     """
 
-    return paginate(crud.get_vehicle_data(db, from_date, to_date, eval(order)))
+    return crud.get_vehicle_data(db, from_date, to_date, eval(order))
 
 
 @router.get("/vehicle_data/{id}", response_model=Page[schemas.Datapoint])
@@ -32,7 +32,7 @@ def get_vehicle_data_by_id(id: str, db: Session = Depends(get_db), from_date: da
     Get datapoints from a specific vehicle
     """
 
-    return paginate(crud.get_vehicle_data_by_id(db, id, from_date, to_date, eval(order)))
+    return crud.get_vehicle_data_by_id(db, id, from_date, to_date, eval(order))
 
 
 @router.get("/vehicles", response_model=List[schemas.Vehicle])
