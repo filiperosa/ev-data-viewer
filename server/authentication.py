@@ -14,32 +14,22 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$qFwxu1d/KTUfoEjbP/rO/OJlQ8TS2TAVpBQGenbrTF.xFqpX2Cu62",
-        "disabled": False,
-    },
-    "alice": {
-        "username": "alice",
-        "full_name": "Alice Wonderson",
-        "email": "alice@example.com",
-        "hashed_password": "fakehashedsecret2",
-        "disabled": True,
-    },
+# proof of concept users database
+users_db = {
+    "admin": {
+        "username": "admin",
+        "hashed_password": "$2b$12$76.bmmKZ.5l/Vv4bDTqOF.JKsELsFtuSMfWElAVO9VxnQNwN39Jl2",
+    }
 }
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+# Pydantic models for the authentication
 class User(BaseModel):
     username: str
     email: Union[str, None] = None
     full_name: Union[str, None] = None
-    disabled: Union[bool, None] = None
 
 class Token(BaseModel):
     access_token: str
@@ -53,12 +43,15 @@ class UserInDB(User):
 
 
 def get_user(db, username: str):
+    """ Get a user from the database """
     if username in db:
         user_dict = db[username]
         return UserInDB(**user_dict)
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
+    """ Get logged in user from token"""
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -72,39 +65,21 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = get_user(users_db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
 
 
-
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
-
-
 def verify_password(plain_password, hashed_password):
+    """ Verify if password matches the stored hashed """
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
-    if not user:
-        return False
-    if not verify_password(password, user.hashed_password):
-        return False
-    return user
-
-
 def token_login(form_data: OAuth2PasswordRequestForm):
-    print(form_data)
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    """ Get a token with a username and password"""
+
+    user = authenticate_user(users_db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -118,7 +93,19 @@ def token_login(form_data: OAuth2PasswordRequestForm):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
+def authenticate_user(db, username: str, password: str):
+    """ Authenticate a user with a username and password"""
+    user = get_user(db, username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
+    """ Transform a dictionary into a JWT token """
+
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
