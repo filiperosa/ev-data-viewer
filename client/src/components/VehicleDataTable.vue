@@ -13,11 +13,11 @@
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">From</span>
-            <Datepicker v-model="from" model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker" :auto-apply="true"></Datepicker>
+            <Datepicker v-model="from" model-type="yyyy-MM-dd'T'HH:mm:ss.SSSSSS" input-class-name="custom-datepicker" :auto-apply="true"></Datepicker>
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">To</span>
-            <Datepicker v-model="to" show-now-button model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker" :auto-apply="true"></Datepicker>
+            <Datepicker v-model="to" show-now-button model-type="yyyy-MM-dd'T'HH:mm:ss.SSSSSS" input-class-name="custom-datepicker" :auto-apply="true"></Datepicker>
         </div>
         <button class="btn btn-primary" @click="filterButtonClick">Filter</button>
     </div>
@@ -34,7 +34,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="datapoint in datapoints" v-bind:key="datapoint.id">
+                <tr v-for="datapoint in datapoints" 
+                    v-bind:key="datapoint.id" 
+                    @click.exact="selectFrom(datapoint)" 
+                    @click.shift="selectTo(datapoint)"
+                    :class="[isSelected(datapoint) ? 'bg-primary text-white' : '']"
+                    >
+
                     <td>{{ formatDate(datapoint.timestamp) }}</td>
                     <td>{{ datapoint.speed }}</td>
                     <td>{{ datapoint.odometer }}</td>
@@ -92,7 +98,7 @@ export default {
     methods: {
         ...mapActions( useEvDataStore, {
             getDatapoints: 'fetchVehicleDatapoints',
-            getVehicleIds: 'fetchVehicleIds'
+            getVehicleIds: 'fetchVehicleIds',
         }),
 
         //
@@ -127,6 +133,23 @@ export default {
         // Format date string shown in the timestamp column
         formatDate(str_datetime) {
             return new Date(str_datetime).toLocaleString();
+        },
+        selectFrom(datapoint) {
+            console.log(`selected from: ${datapoint.timestamp}`)
+            this.from = datapoint.timestamp;
+            this.to = null;
+        },
+        selectTo(datapoint) {
+            if (new Date(this.from) < new Date(datapoint.timestamp)) {
+                console.log(`selected to: ${datapoint.timestamp}`)
+                this.to = datapoint.timestamp;
+            }
+        },
+        isSelected(datapoint) {
+            if (this.from && this.to) {
+                return new Date(this.from) <= new Date(datapoint.timestamp) && new Date(datapoint.timestamp) <= new Date(this.to);
+            }
+            return false;
         }
     },
     computed: {
@@ -328,6 +351,10 @@ nav > .input-group {
   border-radius: 4px;
   background-color: rgba(0, 0, 0, .5);
   box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}
+
+td::selection {
+    background: none;
 }
 </style>
 

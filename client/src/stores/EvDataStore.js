@@ -20,11 +20,6 @@ export const useEvDataStore = defineStore(
         }),
         actions: {
             //
-            // Format the date string to be compatible with the datepicker
-            formatDatepickerStr(dateStr){
-                return dateStr.replace('T', ' ').split('.')[0] + '.0';
-            },
-            //
             // Get all the vehicle ids from the API
             async fetchVehicleIds(){
                 const rsp_full = await fetch(`${API_URL}/vehicles`);
@@ -62,7 +57,7 @@ export const useEvDataStore = defineStore(
 
                 if (this.from == null) {
                     console.log("Initialize from datepicker to first datapoint: ", this.datapoints[0].timestamp)
-                    this.from = this.formatDatepickerStr(this.datapoints[0].timestamp);
+                    this.from = this.datapoints[0].timestamp;
                 }
 
                 console.log(this.datapoints);
