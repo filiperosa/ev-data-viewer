@@ -13,11 +13,11 @@
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">From</span>
-            <Datepicker v-model="from" model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker"></Datepicker>
+            <Datepicker v-model="from" model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker" :auto-apply="true"></Datepicker>
         </div>
         <div class="input-group input-group-sm filter">
             <span class="input-group-text text-secondary bg-white">To</span>
-            <Datepicker v-model="to" show-now-button model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker" ></Datepicker>
+            <Datepicker v-model="to" show-now-button model-type="yyyy-MM-dd HH:mm:ss.S" input-class-name="custom-datepicker" :auto-apply="true"></Datepicker>
         </div>
         <button class="btn btn-primary" @click="filterButtonClick">Filter</button>
     </div>
@@ -35,7 +35,7 @@
             </thead>
             <tbody>
                 <tr v-for="datapoint in datapoints" v-bind:key="datapoint.id">
-                    <td>{{ datapoint.timestamp }}</td>
+                    <td>{{ formatDate(datapoint.timestamp) }}</td>
                     <td>{{ datapoint.speed }}</td>
                     <td>{{ datapoint.odometer }}</td>
                     <td>{{ datapoint.state_of_charge }}</td>
@@ -81,7 +81,7 @@
 import LineChart from './LineChart.vue';
 import PieChart from './PieChart.vue';
 
-import { mapWritableState } from 'pinia'
+import { mapActions, mapWritableState } from 'pinia'
 import { useEvDataStore } from '../stores/EvDataStore'
 
 export default {
@@ -90,18 +90,11 @@ export default {
         return {};
     },
     methods: {
-        //
-        // Refresh data
-        async getDatapoints() {
-            const store = useEvDataStore();
-            await store.fetchVehicleDatapoints();
-        },
-        //
-        // Get vehicle ids
-        async getVehicleIds() {
-            const store = useEvDataStore();
-            await store.fetchVehicleIds();
-        },
+        ...mapActions( useEvDataStore, {
+            getDatapoints: 'fetchVehicleDatapoints',
+            getVehicleIds: 'fetchVehicleIds'
+        }),
+
         //
         // Filter button click handler
         filterButtonClick() {
@@ -129,6 +122,11 @@ export default {
             this.order_asc = !this.order_asc;
             console.log(this.order_asc)
             this.getDatapoints();
+        },
+        //
+        // Format date string shown in the timestamp column
+        formatDate(str_datetime) {
+            return new Date(str_datetime).toLocaleString();
         }
     },
     computed: {
@@ -225,7 +223,7 @@ export default {
             }
         }
     },
-    mounted() {
+    beforeMount() {
         // Retrieve some data on mount
         this.getVehicleIds();
         this.getDatapoints();
