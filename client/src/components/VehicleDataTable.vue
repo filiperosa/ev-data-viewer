@@ -38,7 +38,7 @@
                     v-bind:key="datapoint.id" 
                     @click.exact="selectFrom(datapoint)" 
                     @click.shift="selectTo(datapoint)"
-                    :class="[isSelected(datapoint) ? 'bg-primary text-white' : '']"
+                    :class="[isSelected(datapoint) ? 'bg-primary bg-opacity-75 text-white' : '']"
                     >
 
                     <td>{{ formatDate(datapoint.timestamp) }}</td>
